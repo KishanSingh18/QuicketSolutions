@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag, Resize and Create Shapes</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        #container {
+            width: calc(100% - 200px); /* Adjust width for the sidebar */
+            height: 100%;
+            background-color: #f0f0f0;
+            float: right; /* Float to the right to make space for the sidebar */
+            position: relative;
+        }
+
+        #sidebar {
+            width: 200px; /* Width of the sidebar */
+            height: 100%;
+            background-color: #ccc;
+            float: left; /* Float to the left */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+
+        .shape-button {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 50%;
+        }
+
+        .shape {
+            position: absolute;
+            cursor: move;
+            border: 2px solid black;
+            background-color: white; /* Change background color to white */
+            overflow: auto;
+        }
+
+        .octagon {
+            width: 100px;
+            height: 100px;
+            background-image: url('https://www.iconsdb.com/icons/preview/white/octagon-outline-xxl.png');
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar">
+        <button class="shape-button" onclick="selectShape('square')">□</button>
+        <button class="shape-button" onclick="selectShape('circle')">○</button>
+        <button class="shape-button" onclick="selectShape('diamond')">◆</button>
+        <button class="shape-button" onclick="selectShape('octagon')">⯃</button>
+    </div>
+
+    <div id="container" onmousedown="startDragging(event)" onmousemove="dragShape(event)" onmouseup="endDragging(event)">
+    </div>
+
+    <script>
+        let isDragging = false;
+        let startX, startY, offsetX, offsetY, currentShape;
+
+        function startDragging(event) {
+            if (!event.target.classList.contains('shape')) return;
+            isDragging = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            offsetX = event.target.offsetLeft;
+            offsetY = event.target.offsetTop;
+            currentShape = event.target;
+            event.stopPropagation();
+        }
+
+        function dragShape(event) {
+            if (!isDragging || !currentShape) return;
+            let newX = offsetX + event.clientX - startX;
+            let newY = offsetY + event.clientY - startY;
+            currentShape.style.left = newX + 'px';
+            currentShape.style.top = newY + 'px';
+            event.stopPropagation();
+        }
+
+        function endDragging() {
+            isDragging = false;
+            currentShape = null;
+        }
+
+        function selectShape(shapeType) {
+            switch (shapeType) {
+                case 'square':
+                    currentShape = document.createElement('div');
+                    currentShape.className = 'shape';
+                    currentShape.style.width = '100px';
+                    currentShape.style.height = '100px';
+                    currentShape.style.backgroundColor = 'white'; 
+                    break;
+                case 'circle':
+                    currentShape = document.createElement('div');
+                    currentShape.className = 'shape';
+                    currentShape.style.width = '100px';
+                    currentShape.style.height = '100px';
+                    currentShape.style.backgroundColor = 'white'; 
+                    currentShape.style.borderRadius = '50%';
+                    break;
+                case 'triangle':
+                    currentShape = document.createElement('div');
+                    currentShape.className = 'shape';
+                    currentShape.style.width = '0';
+                    currentShape.style.height = '0';
+                    currentShape.style.borderLeft = '50px solid transparent';
+                    currentShape.style.borderRight = '50px solid transparent';
+                    currentShape.style.borderBottom = '100px solid black';
+                    break;
+                case 'diamond':
+                    currentShape = document.createElement('div');
+                    currentShape.className = 'shape';
+                    currentShape.style.width = '100px';
+                    currentShape.style.height = '100px';
+                    currentShape.style.backgroundColor = 'white'; 
+                    currentShape.style.transform = 'rotate(45deg)';
+                    break;
+                case 'octagon':
+                    currentShape = document.createElement('div');
+                    currentShape.className = 'shape octagon';
+			currentShape.style.backgroundColor = 'black';
+                    break;
+            }
+            currentShape.style.position = 'absolute';
+            currentShape.style.left = '0';
+            currentShape.style.top = '0';
+            currentShape.style.border = '2px solid black';
+            currentShape.style.overflow = 'auto';
+            document.getElementById('container').appendChild(currentShape);
+        }
+    </script>
+</body>
+
+</html>
