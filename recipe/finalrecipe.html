@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather & Recipes</title>
+<style>
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  margin: 10px;
+}
+
+.box { /* Styling for weather, details, and date boxes */
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 10px;
+  margin: 5px;
+  width: 250px; /* Fixed width for boxes */
+  height: 100px; /* Adjust height as needed */
+  text-align: center;
+}
+
+.left-column, .right-column { /* Adjust styles for columns */
+  width: 50%;
+}
+
+.recipe { /* Maintain styles for recipes */
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  border: 1px solid black;
+  height: auto; /* Adjust height as needed */
+}
+
+.recipe h2 {
+  margin-bottom: 5px;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="box">
+      <h2 id="place">London</h2>
+      <p id="temperature">4 </p>
+    </div>
+    <div>
+      <h1>IV year student at NITK Suratkal</h1>
+      <h2>Kishan Singh</h2>
+      <h3>Contact</h3>
+      <p>+91 7759807898</p>
+      <p>LinkedIn:</p>
+      <p>Email to contact: kishan.singhh77@gmail.com</p>
+    </div>
+    <div class="box">
+      <p id="date"></p>
+    </div>
+  </div>
+
+  <div class="left-column">
+    <h2>Recipes</h2>
+    <div class="recipe" id="recipe1">
+      <h2></h2>
+      <p></p>
+    </div>
+    <div class="recipe" id="recipe2">
+      <h2></h2>
+      <p></p>
+    </div>
+    <div class="recipe" id="recipe3">
+      <h2></h2>
+      <p></p>
+    </div>
+  </div>
+  <div class="right-column">
+  </div>
+
+  <script>
+//fetchingn personal info from the local host
+fetch('http://localhost:8000/profile.json')
+            .then(response => response.json())
+            .then(data => {
+                // Update the HTML content with the data from JSON
+                document.getElementById('name').innerText = data.name;
+                document.getElementById('email').innerText = data.email;
+                document.getElementById('phone').innerText = data.phone_number;
+                document.getElementById('linkedin').innerText = data.linkedinId;
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+
+
+    // Fetch temperature data from weather API
+    fetch('https://api.openweathermap.org/data/2.5/weather?q=London&appid=Your_API_KEY')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      document.getElementById('place').textContent = data.name + ', ' + data.sys.country;
+      document.getElementById('temperature').textContent = (data.main.temp - 273.15).toFixed(2) + '°C';
+    })
+    .catch(error => {
+      console.error('Error fetching weather data:', error);
+    });
+
+    // Fetch recipes data from API
+    for (let i = 1; i <= 3; i++) {
+      fetch('https://www.themealdb.com/api/json/v1/1/random.php')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        const recipe = data.meals[0];
+        const recipeElement = document.getElementById('recipe' + i);
+        recipeElement.querySelector('h2').textContent = recipe.strMeal;
+        recipeElement.querySelector('p').textContent = recipe.strInstructions.substring(0, 100) + "..."; // Truncate long instructions
+      })
+      .catch(error => {
+        console.error('Error fetching recipe data:', error);
+      });
+    }
+
+    // Display current date
+    const currentDate = new Date();
+    document.getElementById('date').textContent = currentDate.toDateString();
+
+  </script>
+ </body>
+</html>
